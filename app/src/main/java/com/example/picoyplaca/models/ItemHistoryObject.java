@@ -5,12 +5,14 @@ public class ItemHistoryObject {
     public final String timestamp;
     public final int senior_citizen;
     public final int handicapped;
+    public final int infrigement;
 
-    public ItemHistoryObject(String plate, String timestamp, int senior_citizen, int handicapped) {
+    public ItemHistoryObject(String plate, String timestamp, int senior_citizen, int handicapped, int infringement) {
         this.plate = plate;
         this.timestamp = timestamp;
         this.senior_citizen = senior_citizen;
         this.handicapped = handicapped;
+        this.infrigement = infringement;
     }
 
     public String getPlate() {
@@ -26,6 +28,9 @@ public class ItemHistoryObject {
     }
 
     public int isHandicapped() {
+        return handicapped;
+    }
+    public int isInfringement() {
         return handicapped;
     }
 

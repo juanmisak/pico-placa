@@ -30,10 +30,11 @@ public class LocalDbHelper extends SQLiteOpenHelper {
 
         db.execSQL("CREATE TABLE "+ ItemHistoryContract.ItemHistoryContractEntry.HISTORT_ITEM_TABLE+"("
                 + ItemHistoryContract.ItemHistoryContractEntry._ID+ " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_PLATE+ " TEXT,"
-                + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_TIMESTAMP+" TEXT,"
-                + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_SENIOR_CITIZEN+" INTEGER DEFAULT -1,"
-                + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_HANDICAPPED+" INTEGER DEFAULT -1);");
+                + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_PLATE+ " TEXT,"
+                + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_TIMESTAMP+" TEXT,"
+                + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_SENIOR_CITIZEN+" INTEGER DEFAULT -1,"
+                + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_HANDICAPPED+" INTEGER DEFAULT -1,"
+                + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_INFRINGEMENT+" INTEGER DEFAULT -1);");
     }
 
     @Override
@@ -45,10 +46,10 @@ public class LocalDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase sqLiteDatabase=getWritableDatabase();
         ContentValues values= new ContentValues();
 
-        values.put(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_PLATE,mItemHistoryObject.getPlate());
-        values.put(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_TIMESTAMP,mItemHistoryObject.getTimestamp());
-        values.put(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_SENIOR_CITIZEN,mItemHistoryObject.isSenior_citizen());
-        values.put(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_HANDICAPPED,mItemHistoryObject.isHandicapped());
+        values.put(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_PLATE,mItemHistoryObject.getPlate());
+        values.put(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_TIMESTAMP,mItemHistoryObject.getTimestamp());
+        values.put(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_SENIOR_CITIZEN,mItemHistoryObject.isSenior_citizen());
+        values.put(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_HANDICAPPED,mItemHistoryObject.isHandicapped());
 
         sqLiteDatabase.insert(ItemHistoryContract.ItemHistoryContractEntry.HISTORT_ITEM_TABLE,null,values);
     }
@@ -57,7 +58,7 @@ public class LocalDbHelper extends SQLiteOpenHelper {
         mItemHistoryList=new ArrayList<>();
         SQLiteDatabase sqLiteDatabase=getReadableDatabase();
         String queryGetAll = "SELECT * FROM " + ItemHistoryContract.ItemHistoryContractEntry.HISTORT_ITEM_TABLE+
-                " WHERE " + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_PLATE+ " = " +plate;
+                " WHERE " + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_PLATE+ " = " +plate;
 
         Cursor c=sqLiteDatabase.rawQuery(queryGetAll,null);
         if (c.getCount() > 0)
@@ -65,10 +66,11 @@ public class LocalDbHelper extends SQLiteOpenHelper {
             c.moveToFirst();
             do {
                 mItemHistoryObject=new ItemHistoryObject(
-                        c.getString(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_PLATE)),
-                        c.getString(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_TIMESTAMP)),
-                        c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_SENIOR_CITIZEN)),
-                        c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_HANDICAPPED))
+                        c.getString(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_PLATE)),
+                        c.getString(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_TIMESTAMP)),
+                        c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_SENIOR_CITIZEN)),
+                        c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_HANDICAPPED)),
+                        c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_INFRINGEMENT))
                 );
                 mItemHistoryList.add(mItemHistoryObject);
 
@@ -89,10 +91,11 @@ public class LocalDbHelper extends SQLiteOpenHelper {
             c.moveToFirst();
             do {
                 mItemHistoryObject=new ItemHistoryObject(
-                        c.getString(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_PLATE)),
-                        c.getString(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_TIMESTAMP)),
-                        c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_SENIOR_CITIZEN)),
-                        c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORT_HANDICAPPED))
+                        c.getString(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_PLATE)),
+                        c.getString(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_TIMESTAMP)),
+                        c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_SENIOR_CITIZEN)),
+                        c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_INFRINGEMENT)),
+                        c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_HANDICAPPED))
                 );
                 mItemHistoryList.add(mItemHistoryObject);
 
