@@ -9,6 +9,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.example.picoyplaca.R;
+import com.example.picoyplaca.fragments.CheckingFragment;
+import com.example.picoyplaca.fragments.HistoryFragment;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
@@ -19,6 +21,8 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @StringRes
     private static final int[] TAB_TITLES = new int[]{R.string.tab_check, R.string.tab_history};
     private final Context mContext;
+    private static final int CHECK_FRAGMENT = 0;
+    private static final int HISTORY_FRAGMENT = 1;
 
     public SectionsPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
@@ -27,9 +31,13 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment (defined as a static inner class below).
-        return PlaceholderFragment.newInstance(position + 1);
+        switch (position) {
+            case CHECK_FRAGMENT:
+                return CheckingFragment.newInstance("","");
+            case HISTORY_FRAGMENT:
+                return HistoryFragment.newInstance(1);
+        }
+        return null;
     }
 
     @Nullable

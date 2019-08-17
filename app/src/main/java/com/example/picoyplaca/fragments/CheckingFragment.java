@@ -1,30 +1,50 @@
 package com.example.picoyplaca.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 
 import com.example.picoyplaca.R;
+import com.google.android.material.snackbar.Snackbar;
+
+import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link Checking.OnFragmentInteractionListener} interface
+ * {@link CheckingFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link Checking#newInstance} factory method to
+ * Use the {@link CheckingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Checking extends Fragment {
+public class CheckingFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static Button mCheckButton;
+    private static Button mClearButton;
+    private static EditText mPlateInputText;
+    private String plate;
+    static final int INFRINGEMENT = 0;
+    static final int NOT_INFRINGEMENT = 1;
+    static AlertDialog.Builder alertBuilder;
+    private View checkBoxView;
+    private CheckBox HandicappedcheckBox;
+    private CheckBox SeniorCitizencheckBox;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -32,7 +52,7 @@ public class Checking extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public Checking() {
+    public CheckingFragment() {
         // Required empty public constructor
     }
 
@@ -42,11 +62,11 @@ public class Checking extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment Checking.
+     * @return A new instance of fragment CheckingFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static Checking newInstance(String param1, String param2) {
-        Checking fragment = new Checking();
+    public static CheckingFragment newInstance(String param1, String param2) {
+        CheckingFragment fragment = new CheckingFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -67,7 +87,121 @@ public class Checking extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_checking, container, false);
+        View mView;
+        mView = inflater.inflate(R.layout.fragment_checking, container, false);
+        mPlateInputText=mView.findViewById(R.id.plate_input_text);
+        mCheckButton=mView.findViewById(R.id.check_button);
+        mClearButton=mView.findViewById(R.id.clear_button);
+
+        checkBoxView = View.inflate(getActivity(), R.layout.checkbox_exceptions, null);
+        SeniorCitizencheckBox= checkBoxView.findViewById(R.id.checkbox_senior_citizen);
+        HandicappedcheckBox = checkBoxView.findViewById(R.id.checkbox_handicapped);
+
+        mCheckButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                plate = String.valueOf(mPlateInputText.getText());
+                if(isValidatePlate(plate)){
+                    checkPicoyPlaca(plate);
+                }
+            }
+        });
+
+        mClearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mPlateInputText.setText("");
+            }
+        });
+
+        return mView;
+    }
+
+    private void checkPicoyPlaca(String plate) {
+        char last_digit;
+        last_digit = plate.charAt(mPlateInputText.length()-1);
+        Calendar calendar = Calendar.getInstance();
+        int day_of_week = calendar.get(Calendar.DAY_OF_WEEK);
+
+        switch (day_of_week) {
+            case Calendar.MONDAY:
+                if(last_digit == 1 || last_digit == 2){
+                    showAlertDialog(NOT_INFRINGEMENT);
+                }else{
+                    showAlertDialog(INFRINGEMENT);
+                }
+                break;
+            case Calendar.TUESDAY:
+                if(last_digit == 3 || last_digit == 4){
+                    showAlertDialog(NOT_INFRINGEMENT);
+                }else{
+                    showAlertDialog(INFRINGEMENT);
+                }
+                break;
+            case Calendar.WEDNESDAY:
+                if(last_digit == 5 || last_digit == 6){
+                    showAlertDialog(NOT_INFRINGEMENT);
+                }else{
+                    showAlertDialog(INFRINGEMENT);
+                }
+                break;
+            case Calendar.THURSDAY:
+                if(last_digit == 7 || last_digit == 8){
+                    showAlertDialog(NOT_INFRINGEMENT);
+                }else{
+                    showAlertDialog(INFRINGEMENT);
+                }
+                break;
+            case Calendar.FRIDAY:
+                if(last_digit == 9 || last_digit == 0){
+                    showAlertDialog(NOT_INFRINGEMENT);
+                }else{
+                    showAlertDialog(INFRINGEMENT);
+                }
+                break;
+        }
+        showAlertDialog(NOT_INFRINGEMENT);
+    }
+
+    private void showAlertDialog(final int Infringement) {
+        switch (Infringement) {
+            case INFRINGEMENT:
+
+                break;
+            case NOT_INFRINGEMENT:
+                int total_infringements = 0;
+                alertBuilder = new AlertDialog.Builder(getActivity());
+                alertBuilder.setTitle("SÍ HAY CONTRAVENCIÓN");
+                alertBuilder.setIcon(R.mipmap.ic_launcher);
+                alertBuilder.setMessage("Número de reincidencias: "+ total_infringements);
+                alertBuilder.setView(checkBoxView);
+                alertBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //addItemToHistory(mPlateInputText.getText());
+                    }
+                });
+                alertBuilder.setCancelable(false);
+                alertBuilder.create().show();
+                break;
+        }
+    }
+
+    private boolean isValidatePlate(String mPlateInputText) {
+        char last_digit;
+        last_digit = mPlateInputText.charAt(mPlateInputText.length()-1);
+        if( ! Character.isDigit(last_digit)){
+            Snackbar snackBar = Snackbar.make(getActivity().findViewById(android.R.id.content),
+                    "La placa debe terminar en un número", Snackbar.LENGTH_LONG);
+            snackBar.show();
+            return false;
+        }else if(mPlateInputText.length() < 6){
+            Snackbar snackBar = Snackbar.make(getActivity().findViewById(android.R.id.content),
+                    "Inserte un placa válida", Snackbar.LENGTH_LONG);
+            snackBar.show();
+            return false;
+        }
+        return true;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
