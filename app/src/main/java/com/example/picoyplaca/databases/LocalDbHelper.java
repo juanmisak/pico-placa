@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.picoyplaca.models.ItemHistoryObject;
 
@@ -22,13 +23,13 @@ public class LocalDbHelper extends SQLiteOpenHelper {
     private ItemHistoryObject mItemHistoryObject;
 
     public LocalDbHelper(Context context) {
-        super(context, DATABASE_NAME, null,DATABASE_VERSION);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL("CREATE TABLE "+ ItemHistoryContract.ItemHistoryContractEntry.HISTORT_ITEM_TABLE+"("
+        db.execSQL("CREATE TABLE "+ ItemHistoryContract.ItemHistoryContractEntry.HISTORY_ITEM_TABLE+"("
                 + ItemHistoryContract.ItemHistoryContractEntry._ID+ " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_PLATE+ " TEXT,"
                 + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_TIMESTAMP+" TEXT,"
@@ -51,13 +52,13 @@ public class LocalDbHelper extends SQLiteOpenHelper {
         values.put(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_SENIOR_CITIZEN,mItemHistoryObject.isSenior_citizen());
         values.put(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_HANDICAPPED,mItemHistoryObject.isHandicapped());
 
-        sqLiteDatabase.insert(ItemHistoryContract.ItemHistoryContractEntry.HISTORT_ITEM_TABLE,null,values);
+        sqLiteDatabase.insert(ItemHistoryContract.ItemHistoryContractEntry.HISTORY_ITEM_TABLE,null,values);
     }
 
     public List<ItemHistoryObject> getItemHistoryList(String plate) {
         mItemHistoryList=new ArrayList<>();
         SQLiteDatabase sqLiteDatabase=getReadableDatabase();
-        String queryGetAll = "SELECT * FROM " + ItemHistoryContract.ItemHistoryContractEntry.HISTORT_ITEM_TABLE+
+        String queryGetAll = "SELECT * FROM " + ItemHistoryContract.ItemHistoryContractEntry.HISTORY_ITEM_TABLE+
                 " WHERE " + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_PLATE+ " = " +plate;
 
         Cursor c=sqLiteDatabase.rawQuery(queryGetAll,null);
@@ -83,7 +84,7 @@ public class LocalDbHelper extends SQLiteOpenHelper {
     public List<ItemHistoryObject> getItemHistoryList() {
         mItemHistoryList=new ArrayList<>();
         SQLiteDatabase sqLiteDatabase=getReadableDatabase();
-        String queryGetAll = "SELECT * FROM " + ItemHistoryContract.ItemHistoryContractEntry.HISTORT_ITEM_TABLE;
+        String queryGetAll = "SELECT * FROM " + ItemHistoryContract.ItemHistoryContractEntry.HISTORY_ITEM_TABLE;
 
         Cursor c=sqLiteDatabase.rawQuery(queryGetAll,null);
         if (c.getCount() > 0)
@@ -103,5 +104,13 @@ public class LocalDbHelper extends SQLiteOpenHelper {
 
         }
         return mItemHistoryList;
+    }
+
+    public int count(String plate) {
+        SQLiteDatabase sqLiteDatabase = getReadableDatabase();
+        String queryGetAll = " SELECT * FROM " + ItemHistoryContract.ItemHistoryContractEntry.HISTORY_ITEM_TABLE+" WHERE " + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_PLATE+ " LIKE " + "'"+plate+"'";
+
+        Cursor c = sqLiteDatabase.rawQuery(queryGetAll, null);
+        return c.getCount();
     }
 }

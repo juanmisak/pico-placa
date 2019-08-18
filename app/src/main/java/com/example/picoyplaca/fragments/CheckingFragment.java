@@ -18,9 +18,13 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import com.example.picoyplaca.R;
+import com.example.picoyplaca.databases.LocalDbHelper;
+import com.example.picoyplaca.models.ItemHistoryObject;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.security.Timestamp;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,9 +46,7 @@ public class CheckingFragment extends Fragment {
     static final int INFRINGEMENT = 0;
     static final int NOT_INFRINGEMENT = 1;
     static AlertDialog.Builder alertBuilder;
-    private View checkBoxView;
-    private CheckBox HandicappedcheckBox;
-    private CheckBox SeniorCitizencheckBox;
+    private LocalDbHelper mDb;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -81,6 +83,7 @@ public class CheckingFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        mDb=new LocalDbHelper(getContext());
     }
 
     @Override
@@ -92,10 +95,6 @@ public class CheckingFragment extends Fragment {
         mPlateInputText=mView.findViewById(R.id.plate_input_text);
         mCheckButton=mView.findViewById(R.id.check_button);
         mClearButton=mView.findViewById(R.id.clear_button);
-
-        checkBoxView = View.inflate(getActivity(), R.layout.checkbox_exceptions, null);
-        SeniorCitizencheckBox= checkBoxView.findViewById(R.id.checkbox_senior_citizen);
-        HandicappedcheckBox = checkBoxView.findViewById(R.id.checkbox_handicapped);
 
         mCheckButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,12 +163,16 @@ public class CheckingFragment extends Fragment {
     }
 
     private void showAlertDialog(final int Infringement) {
+        View checkBoxView = View.inflate(getActivity(), R.layout.checkbox_exceptions, null);
+        final CheckBox seniorCitizencheckBox= checkBoxView.findViewById(R.id.checkbox_senior_citizen);
+        final CheckBox handicappedcheckBox = checkBoxView.findViewById(R.id.checkbox_handicapped);
+
         switch (Infringement) {
             case INFRINGEMENT:
 
                 break;
             case NOT_INFRINGEMENT:
-                int total_infringements = 0;
+                int total_infringements = mDb.count(mPlateInputText.getText().toString());
                 alertBuilder = new AlertDialog.Builder(getActivity());
                 alertBuilder.setTitle("SÍ HAY CONTRAVENCIÓN");
                 alertBuilder.setIcon(R.mipmap.ic_launcher);
@@ -178,7 +181,24 @@ public class CheckingFragment extends Fragment {
                 alertBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        //addItemToHistory(mPlateInputText.getText());
+                        Date date= new Date();
+                        long time = date.getTime();
+                        int seniorCitizenValue = 0;
+                        int hadicappedValue = 0;
+                        if (seniorCitizencheckBox.isChecked()){
+                            seniorCitizenValue=1;
+                        }
+                        if (handicappedcheckBox.isChecked()){
+                            hadicappedValue=1;
+                        }
+
+                        ItemHistoryObject mItemHistoryObject = new ItemHistoryObject(mPlateInputText.getText().toString(),
+                                String.valueOf(time),
+                                seniorCitizenValue,
+                                hadicappedValue,
+                                INFRINGEMENT
+                                );
+                        mDb.addItemToHistory(mItemHistoryObject);
                     }
                 });
                 alertBuilder.setCancelable(false);

@@ -4,7 +4,7 @@ import android.provider.BaseColumns;
 
 public class ItemHistoryContract {
     public static abstract class ItemHistoryContractEntry implements BaseColumns {
-        public static final String HISTORT_ITEM_TABLE = "item_table";
+        public static final String HISTORY_ITEM_TABLE = "item_table";
 
         public static final String ITEM_HISTORY_PLATE = "item_history_plate";
         public static final String ITEM_HISTORY_TIMESTAMP = "item_history_timestamp";
