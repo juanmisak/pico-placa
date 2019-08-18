@@ -55,11 +55,10 @@ public class LocalDbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.insert(ItemHistoryContract.ItemHistoryContractEntry.HISTORY_ITEM_TABLE,null,values);
     }
 
-    public List<ItemHistoryObject> getItemHistoryList(String plate) {
+    public List<ItemHistoryObject> getItemHistoryList() {
         mItemHistoryList=new ArrayList<>();
         SQLiteDatabase sqLiteDatabase=getReadableDatabase();
-        String queryGetAll = "SELECT * FROM " + ItemHistoryContract.ItemHistoryContractEntry.HISTORY_ITEM_TABLE+
-                " WHERE " + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_PLATE+ " = " +plate;
+        String queryGetAll = "SELECT * FROM " + ItemHistoryContract.ItemHistoryContractEntry.HISTORY_ITEM_TABLE + " ORDER BY " + ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_TIMESTAMP+" DESC ;" ;
 
         Cursor c=sqLiteDatabase.rawQuery(queryGetAll,null);
         if (c.getCount() > 0)
@@ -72,31 +71,6 @@ public class LocalDbHelper extends SQLiteOpenHelper {
                         c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_SENIOR_CITIZEN)),
                         c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_HANDICAPPED)),
                         c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_INFRINGEMENT))
-                );
-                mItemHistoryList.add(mItemHistoryObject);
-
-            } while (c.moveToNext());
-
-        }
-        return mItemHistoryList;
-    }
-
-    public List<ItemHistoryObject> getItemHistoryList() {
-        mItemHistoryList=new ArrayList<>();
-        SQLiteDatabase sqLiteDatabase=getReadableDatabase();
-        String queryGetAll = "SELECT * FROM " + ItemHistoryContract.ItemHistoryContractEntry.HISTORY_ITEM_TABLE;
-
-        Cursor c=sqLiteDatabase.rawQuery(queryGetAll,null);
-        if (c.getCount() > 0)
-        {
-            c.moveToFirst();
-            do {
-                mItemHistoryObject=new ItemHistoryObject(
-                        c.getString(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_PLATE)),
-                        c.getString(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_TIMESTAMP)),
-                        c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_SENIOR_CITIZEN)),
-                        c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_INFRINGEMENT)),
-                        c.getInt(c.getColumnIndex(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_HANDICAPPED))
                 );
                 mItemHistoryList.add(mItemHistoryObject);
 

@@ -7,6 +7,7 @@ import com.example.picoyplaca.databases.LocalDbHelper;
 import com.example.picoyplaca.dummy.DummyContent;
 import com.example.picoyplaca.fragments.CheckingFragment;
 import com.example.picoyplaca.fragments.HistoryFragment;
+import com.example.picoyplaca.models.ItemHistoryObject;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -21,7 +22,9 @@ import android.view.View;
 
 import com.example.picoyplaca.ui.main.SectionsPagerAdapter;
 
-public class MainActivity extends AppCompatActivity implements CheckingFragment.OnFragmentInteractionListener, HistoryFragment.OnListFragmentInteractionListener {
+import org.greenrobot.eventbus.EventBus;
+
+public class MainActivity extends AppCompatActivity implements CheckingFragment.onNewCheck, HistoryFragment.OnListFragmentInteractionListener {
 
     private LocalDbHelper mDBhelper;
 
@@ -51,12 +54,19 @@ public class MainActivity extends AppCompatActivity implements CheckingFragment.
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onCheck(ItemHistoryObject item) {
+//        HistoryFragment.refreshHistory(item);
+        String tagName = "android:switcher:" + R.id.view_pager + ":" + 1; // Your pager name & tab no of Second Fragment
 
+        //Get SecondFragment object from FirstFragment
+        HistoryFragment f2 = (HistoryFragment) getSupportFragmentManager().findFragmentByTag(tagName);
+
+        //Then call your wish method from SecondFragment to update appropriate list
+        f2.refreshHistory(item);
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void refreshHistory(ItemHistoryObject item) {
 
     }
 }
