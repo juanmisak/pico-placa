@@ -2,6 +2,7 @@ package com.example.picoyplaca.adapters;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,7 @@ public class MyHistoryItemRecyclerViewAdapter extends RecyclerView.Adapter<MyHis
         Date date = new Date(stamp.getTime());
         String dateString = sdf.format(date);
         holder.mTimestampView.setText(dateString);
+
         if (mValues.get(position).isSenior_citizen() == 1){
             holder.mSeniorCitizenView.setText("Tercera edad");
         }else {
@@ -61,7 +63,7 @@ public class MyHistoryItemRecyclerViewAdapter extends RecyclerView.Adapter<MyHis
             holder.mHandicappedView.setText("");
         }
         if (mValues.get(position).isInfringement() == 1){
-            holder.mInfringementView.setText("HUBO CONTRAVENCIÓN");
+            holder.mInfringementView.setText("SÍ HUBO CONTRAVENCIÓN");
         }else {
             holder.mInfringementView.setText("NO HUBO CONTRAVENCIÓN");
         }

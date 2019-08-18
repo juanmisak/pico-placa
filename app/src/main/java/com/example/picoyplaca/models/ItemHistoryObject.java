@@ -31,7 +31,7 @@ public class ItemHistoryObject {
         return handicapped;
     }
     public int isInfringement() {
-        return handicapped;
+        return infrigement;
     }
 
     @Override

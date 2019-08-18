@@ -26,6 +26,9 @@ import com.google.android.material.snackbar.Snackbar;
 import org.greenrobot.eventbus.EventBus;
 
 import java.security.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -38,8 +41,8 @@ public class CheckingFragment extends Fragment {
     private static Button mClearButton;
     private static EditText mPlateInputText;
     private String plate;
-    static final int INFRINGEMENT = 0;
-    static final int NOT_INFRINGEMENT = 1;
+    static final int INFRINGEMENT = 1;
+    static final int NOT_INFRINGEMENT = 0;
     static AlertDialog.Builder alertBuilder;
     private LocalDbHelper mDb;
 
@@ -112,64 +115,150 @@ public class CheckingFragment extends Fragment {
     }
 
     private void checkPicoyPlaca(String plate) {
-        char last_digit;
-        last_digit = plate.charAt(mPlateInputText.length()-1);
+        int last_digit;
+        last_digit = Character.getNumericValue(plate.charAt(mPlateInputText.length()-1));
         Calendar calendar = Calendar.getInstance();
         int day_of_week = calendar.get(Calendar.DAY_OF_WEEK);
-
         switch (day_of_week) {
             case Calendar.MONDAY:
                 if(last_digit == 1 || last_digit == 2){
                     showAlertDialog(NOT_INFRINGEMENT);
                 }else{
-                    showAlertDialog(INFRINGEMENT);
+                    if(isTimeInrange()){
+                        showAlertDialog(INFRINGEMENT);
+                    }else {
+                        showAlertDialog(NOT_INFRINGEMENT);
+                    }
                 }
                 break;
             case Calendar.TUESDAY:
-                if(last_digit == 3 || last_digit == 4){
+                if(last_digit == 1 || last_digit == 2){
                     showAlertDialog(NOT_INFRINGEMENT);
                 }else{
-                    showAlertDialog(INFRINGEMENT);
+                    if(isTimeInrange()){
+                        showAlertDialog(INFRINGEMENT);
+                    }else {
+                        showAlertDialog(NOT_INFRINGEMENT);
+                    }
                 }
                 break;
             case Calendar.WEDNESDAY:
-                if(last_digit == 5 || last_digit == 6){
+                if(last_digit == 1 || last_digit == 2){
                     showAlertDialog(NOT_INFRINGEMENT);
                 }else{
-                    showAlertDialog(INFRINGEMENT);
+                    if(isTimeInrange()){
+                        showAlertDialog(INFRINGEMENT);
+                    }else {
+                        showAlertDialog(NOT_INFRINGEMENT);
+                    }
                 }
                 break;
             case Calendar.THURSDAY:
-                if(last_digit == 7 || last_digit == 8){
+                if(last_digit == 1 || last_digit == 2){
                     showAlertDialog(NOT_INFRINGEMENT);
                 }else{
-                    showAlertDialog(INFRINGEMENT);
+                    if(isTimeInrange()){
+                        showAlertDialog(INFRINGEMENT);
+                    }else {
+                        showAlertDialog(NOT_INFRINGEMENT);
+                    }
                 }
                 break;
             case Calendar.FRIDAY:
-                if(last_digit == 9 || last_digit == 0){
+                if(last_digit == 1 || last_digit == 2){
                     showAlertDialog(NOT_INFRINGEMENT);
                 }else{
-                    showAlertDialog(INFRINGEMENT);
+                    if(isTimeInrange()){
+                        showAlertDialog(INFRINGEMENT);
+                    }else {
+                        showAlertDialog(NOT_INFRINGEMENT);
+                    }
                 }
                 break;
         }
-        showAlertDialog(NOT_INFRINGEMENT);
     }
 
-    private void showAlertDialog(final int Infringement) {
+    private boolean isTimeInrange() {
+        try {
+            String string1 = "07:00:00";
+            Date time1 = new SimpleDateFormat("HH:mm:ss").parse(string1);
+            Calendar calendar1 = Calendar.getInstance();
+            calendar1.setTime(time1);
+
+            String string2 = "9:30:00";
+            Date time2 = new SimpleDateFormat("HH:mm:ss").parse(string2);
+            Calendar calendar2 = Calendar.getInstance();
+            calendar2.setTime(time2);
+            calendar2.add(Calendar.DATE, 1);
+
+            DateFormat df = new SimpleDateFormat("hh:mm:ss");
+            String someRandomTime = df.format(new Date());
+            Date d = new SimpleDateFormat("HH:mm:ss").parse(someRandomTime);
+            Calendar calendar3 = Calendar.getInstance();
+            calendar3.setTime(d);
+            calendar3.add(Calendar.DATE, 1);
+
+            Date x = calendar3.getTime();
+            if (x.after(calendar1.getTime()) && x.before(calendar2.getTime())) {
+                return true;
+            }else {
+                return false;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private void showAlertDialog(int Infringement) {
         View checkBoxView = View.inflate(getActivity(), R.layout.checkbox_exceptions, null);
         final CheckBox seniorCitizencheckBox= checkBoxView.findViewById(R.id.checkbox_senior_citizen);
         final CheckBox handicappedcheckBox = checkBoxView.findViewById(R.id.checkbox_handicapped);
 
         switch (Infringement) {
             case INFRINGEMENT:
-
-                break;
-            case NOT_INFRINGEMENT:
                 int total_infringements = mDb.count(mPlateInputText.getText().toString());
                 alertBuilder = new AlertDialog.Builder(getActivity());
                 alertBuilder.setTitle("SÍ HAY CONTRAVENCIÓN");
+                alertBuilder.setIcon(R.mipmap.ic_launcher);
+                alertBuilder.setMessage("Número de reincidencias: "+ total_infringements);
+                alertBuilder.setView(checkBoxView);
+                alertBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Date date= new Date();
+                        long time = date.getTime();
+                        int seniorCitizenValue = 0;
+                        int hadicappedValue = 0;
+                        int infringement_calculated = 1;
+                        if (seniorCitizencheckBox.isChecked()){
+                            seniorCitizenValue=1;
+                            infringement_calculated = 0;
+                        }
+                        if (handicappedcheckBox.isChecked()){
+                            hadicappedValue=1;
+                            infringement_calculated = 0;
+                        }
+
+                        ItemHistoryObject mItemHistoryObject = new ItemHistoryObject(mPlateInputText.getText().toString(),
+                                String.valueOf(time),
+                                seniorCitizenValue,
+                                hadicappedValue,
+                                infringement_calculated
+                        );
+                        mDb.addItemToHistory(mItemHistoryObject);
+                        if (mListener != null) {
+                            mListener.onCheck(mItemHistoryObject);
+                        }
+                    }
+                });
+                alertBuilder.setCancelable(false);
+                alertBuilder.create().show();
+                break;
+            case NOT_INFRINGEMENT:
+                total_infringements = mDb.count(mPlateInputText.getText().toString());
+                alertBuilder = new AlertDialog.Builder(getActivity());
+                alertBuilder.setTitle("NO HAY CONTRAVENCIÓN");
                 alertBuilder.setIcon(R.mipmap.ic_launcher);
                 alertBuilder.setMessage("Número de reincidencias: "+ total_infringements);
                 alertBuilder.setView(checkBoxView);
@@ -191,7 +280,7 @@ public class CheckingFragment extends Fragment {
                                 String.valueOf(time),
                                 seniorCitizenValue,
                                 hadicappedValue,
-                                INFRINGEMENT
+                                NOT_INFRINGEMENT
                                 );
                         mDb.addItemToHistory(mItemHistoryObject);
                         if (mListener != null) {

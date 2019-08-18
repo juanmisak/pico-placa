@@ -51,6 +51,7 @@ public class LocalDbHelper extends SQLiteOpenHelper {
         values.put(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_TIMESTAMP,mItemHistoryObject.getTimestamp());
         values.put(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_SENIOR_CITIZEN,mItemHistoryObject.isSenior_citizen());
         values.put(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_HANDICAPPED,mItemHistoryObject.isHandicapped());
+        values.put(ItemHistoryContract.ItemHistoryContractEntry.ITEM_HISTORY_INFRINGEMENT,mItemHistoryObject.isInfringement());
 
         sqLiteDatabase.insert(ItemHistoryContract.ItemHistoryContractEntry.HISTORY_ITEM_TABLE,null,values);
     }
